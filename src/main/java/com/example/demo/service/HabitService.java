@@ -49,14 +49,42 @@ public class HabitService {
         habit.setUser(user);
         return habitRepository.save(habit);
     }
-    public void deleteHabit(Long userId,Habit habit)
+    public void deleteHabit(Long userId,Long habitId)
     {
-        if(habit==null) throw new IllegalArgumentException("Habit is null");
-        if(userId==null) throw new IllegalArgumentException("User id is null");
+        User user=userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("User not found"));
+        Habit habit=habitRepository.findById(habitId).orElseThrow(()->new IllegalArgumentException("Habit not found"));
+        if(!habit.getUser().getId().equals(user.getId()))
+        {
+            throw new IllegalStateException("Cannot delete habit of another user");
+        }
         habitRepository.delete(habit);
     }
-    public List<Habit> getHabits()
+    public List<Habit> getHabitsByUser(Long userId)
     {
-        return habitRepository.findAll();
+        User user=userRepository.findById(userId).orElseThrow(()-> new IllegalArgumentException("User not found"));
+        return habitRepository.findByUser(user);
+    }
+
+    public Habit updateHabit(Long userId, Long habitId,Habit updateHabit) {
+        if(updateHabit==null) throw new IllegalArgumentException("Update data cannot be null");
+        Habit existingHabit=habitRepository.findById(habitId).orElseThrow(()->new IllegalArgumentException("Habit not found"));
+        User user=userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("User not found"));
+        if(!existingHabit.getUser().getId().equals(user.getId()))
+        {
+            throw new IllegalStateException("Cannot update habit of other user");
+        }
+        if(updateHabit.getFrequency()!=null) existingHabit.setFrequency(updateHabit.getFrequency());
+        if(updateHabit.getHabitName()!=null) existingHabit.setHabitName(updateHabit.getHabitName());
+        if(updateHabit.getStartDate()!=null )
+        {
+            if(updateHabit.getStartDate().isAfter(LocalDate.now()))
+            {
+                throw new IllegalArgumentException("Start date cannot be in future");
+            }
+            else
+            existingHabit.setStartDate(updateHabit.getStartDate());
+        }
+        return habitRepository.save(existingHabit);
+
     }
 }

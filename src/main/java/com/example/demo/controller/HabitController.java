@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 @RestController
-@RequestMapping("/api/v1/habits")
+@RequestMapping("/api/v1/users/{userId}/habits")
 public class HabitController {
     private final HabitService habitService;
 
@@ -15,9 +15,9 @@ public class HabitController {
     }
 
     @GetMapping
-    public List<Habit> getHabits()
+    public List<Habit> getHabitsByUser(@PathVariable Long userId)
     {
-        return habitService.getHabits();
+        return habitService.getHabitsByUser(userId);
     }
 
     @PostMapping
@@ -27,12 +27,18 @@ public class HabitController {
         return habitService.createHabit(userId,habit);
     }
 
-    @DeleteMapping
-
-    public void deleteHabit(@PathVariable Long userId,@RequestBody Habit habit)
+    @PutMapping("/{habitId}")
+    public Habit updateHabit(@PathVariable Long userId, @PathVariable Long habitId,@RequestBody Habit updateHabit)
     {
-        habitService.deleteHabit(userId,habit);
+        return habitService.updateHabit(userId,habitId,updateHabit);
     }
+    @DeleteMapping("/{habitId}")
+    public void deleteHabit(@PathVariable Long userId,@PathVariable Long habitId)
+    {
+        habitService.deleteHabit(userId,habitId);
+    }
+
+
 
 
 }
