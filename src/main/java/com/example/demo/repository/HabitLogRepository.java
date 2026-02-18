@@ -12,6 +12,5 @@ public interface HabitLogRepository extends JpaRepository<HabitLog,Long> {
     //List<HabitLog> findByHabitAndDateBetween(Habit habit, LocalDate FromDate, LocalDate ToDate);
 
     List<HabitLog> findByHabitAndProgressDateBetween(Habit habit, LocalDate finalFromDate, LocalDate finalToDate);
-
     Optional<HabitLog> findByHabitAndProgressDate(Habit habit, LocalDate finalProgressDate);
 }

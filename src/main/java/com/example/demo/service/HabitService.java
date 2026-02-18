@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.HabitRequest;
 import com.example.demo.entity.Habit;
 import com.example.demo.entity.User;
 import com.example.demo.repository.HabitRepository;
@@ -28,7 +29,7 @@ public class HabitService {
         this.userRepository = userRepository;
     }
 
-    public Habit createHabit(Long userId,Habit habit)
+    public Habit createHabit(Long userId,HabitRequest habit)
     {
         if(userId==null) throw new IllegalArgumentException("User id cannot be null");
         if(habit==null) throw new IllegalArgumentException("Habit cannot be null");
@@ -38,6 +39,7 @@ public class HabitService {
         {
             throw new IllegalStateException("Users cannot have more than 10 habits");
         }
+        if(habit.getHabitName()==null) throw new IllegalArgumentException("Habit Name cannot be null");
         if((habit.getHabitName()!=null) && habitRepository.existsByUserAndHabitName(user,habit.getHabitName()))
         {
             throw new IllegalStateException("Habit already exists for the user");
@@ -45,9 +47,27 @@ public class HabitService {
         if(habit.getStartDate()!=null && habit.getStartDate().isAfter(LocalDate.now()))// method in entitiy bcz it has ntg to do with database
         {
             throw new IllegalArgumentException("Start date cannot be in future");
-        }
+        }/*
         habit.setUser(user);
         return habitRepository.save(habit);
+        here now we are creating a new habit entity because previously we were taking habit
+        directly from the client which basically means we are exposing our entire architecture.
+        we are practically saying client to construct the database object,
+        OVERPOSTING VULNERABILITY: CLIENT SENDS FIELD WE DIDNT INTEND TO ALLOW
+
+        */
+        Habit newHabit=new Habit(
+                habit.getHabitName(),
+                user,
+                habit.getStartDate(),
+                habit.getFrequency()
+        );
+        //here this entity is trusted bcz it is fetched from db
+        /*You constructed it in service
+            You validated all inputs
+            You fetched user from DB
+            You did ownership check*/
+        return habitRepository.save(newHabit);
     }
     public void deleteHabit(Long userId,Long habitId)
     {
@@ -65,7 +85,7 @@ public class HabitService {
         return habitRepository.findByUser(user);
     }
 
-    public Habit updateHabit(Long userId, Long habitId,Habit updateHabit) {
+    public Habit updateHabit(Long userId, Long habitId, HabitRequest updateHabit) {
         if(updateHabit==null) throw new IllegalArgumentException("Update data cannot be null");
         Habit existingHabit=habitRepository.findById(habitId).orElseThrow(()->new IllegalArgumentException("Habit not found"));
         User user=userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("User not found"));
