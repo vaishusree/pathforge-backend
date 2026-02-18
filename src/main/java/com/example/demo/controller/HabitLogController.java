@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.CheckInRequest;
 import com.example.demo.entity.HabitLog;
 import com.example.demo.service.HabitLogService;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +24,8 @@ public class HabitLogController {
     }
 
     @PostMapping
-    public HabitLog createHabitLog(@PathVariable Long habitId,@RequestParam LocalDate progressDate,@RequestBody boolean status )
-    {
-        return habitLogService.checkIn(habitId, progressDate,status);
+    public HabitLog createHabitLog(@PathVariable Long habitId,@PathVariable Long userId, @RequestBody CheckInRequest request)
+    {// here we added userId because in the path we have given which user this habit belongs to
+        return habitLogService.checkIn(habitId, request.getProgressDate(),request.isStatus());
     }
 }
