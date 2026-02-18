@@ -19,8 +19,9 @@ public class HabitLog {
     }
 
     public HabitLog(Habit habit, LocalDate progressDate) {
-        this.progressDate = progressDate;
+
         this.habit = habit;
+        this.progressDate = progressDate;
         this.status=false;
     }
 
@@ -44,7 +45,7 @@ public class HabitLog {
         this.progressDate = progressDate;
     }
 
-    public boolean isStatus(boolean status) {
+    public boolean getStatus() {
         return status;
     }
 
