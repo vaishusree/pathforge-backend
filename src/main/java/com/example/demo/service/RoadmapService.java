@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-
+//later gotta build a separate method for Roadmap Respond mapping
 import com.example.demo.dto.RoadmapRequest;
 import com.example.demo.dto.RoadmapRespond;
 import com.example.demo.entity.Roadmap;
@@ -21,11 +21,25 @@ public class RoadmapService {
         this.userRepository = userRepository;
     }
 
-    public List<RoadmapRespond> getRoadmapsByUser(Long userId)
-    {
-        User user=userRepository.findById(userId).orElseThrow(()-> new IllegalArgumentException("User not found"));
-        return roadmapRepository.findByUser(user);
+    public List<RoadmapRespond> getRoadmapsByUser(Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        List<Roadmap> roadmaps = roadmapRepository.findByUser(user);
+
+        return roadmaps.stream()
+                .map(r -> new RoadmapRespond(
+                        r.getId(),
+                        r.getTitle(),
+                        r.getDescription(),
+                        r.getCreatedAt(),
+                        r.getUpdatedAt(),
+                        r.getUser().getId()
+                ))
+                .toList();
     }
+
     public RoadmapRespond createRoadmap(Long userId, RoadmapRequest request)
     {
         if(userId==null) throw new IllegalArgumentException("User not found");
@@ -41,9 +55,9 @@ public class RoadmapService {
         // it is ideal for dto to remain immutable during service processing
 
         Roadmap map=new Roadmap(request.getTitle(), description, user);
-        roadmapRepository.save(map);
+        Roadmap saved =roadmapRepository.save(map);
 
-        return new RoadmapRespond(map.getId(), map.getTitle(), map.getDescription(),map.getCreatedAt(),map.getUpdatedAt(),map.getUser().getId());
+        return new RoadmapRespond(saved.getId(), saved.getTitle(), saved.getDescription(),saved.getCreatedAt(),saved.getUpdatedAt(),saved.getUser().getId());
     }
 
     public void deleteRoadmap(Long userId, Long roadmapId)

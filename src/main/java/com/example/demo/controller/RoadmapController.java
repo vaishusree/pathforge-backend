@@ -1,12 +1,14 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.RoadmapRequest;
-import com.example.demo.entity.Roadmap;
+import com.example.demo.dto.RoadmapRespond;
+
 import com.example.demo.service.RoadmapService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@RestController
+@RequestMapping("/api/v1/users/{userId}/roadmaps")
 public class RoadmapController {
 
     private final RoadmapService roadmapService;
@@ -16,27 +18,28 @@ public class RoadmapController {
     }
 
     @GetMapping
-    public List<Roadmap> getHabitsByUser(@PathVariable Long userId)
+    public List<RoadmapRespond> getRoadmapByUser(@PathVariable Long userId)
     {
-        return roadmapService.getHabitsByUser(userId);
+        return roadmapService.getRoadmapsByUser(userId);
     }
 
     @PostMapping
     //anything that comes from request body is untrusted
-    public Habit createHabit(@PathVariable Long userId,@RequestBody HabitRequest habit )
+    public RoadmapRespond createRoadmap(@PathVariable Long userId, @RequestBody RoadmapRequest request )
     {
-        return habitService.createHabit(userId,habit);
+        return roadmapService.createRoadmap(userId,request);
     }
 
-    @PutMapping("/{habitId}")
-    public Habit updateHabit(@PathVariable Long userId, @PathVariable Long habitId,@RequestBody HabitRequest req)
+    @PutMapping("/{roadmapId}")
+    public RoadmapRespond updateRoadmap(@PathVariable Long userId, @PathVariable Long roadmapId, @RequestBody RoadmapRequest updateRoadmap)
     {
-        return habitService.updateHabit(userId,habitId,req);
+        return roadmapService.updateRoadmap(userId,roadmapId,updateRoadmap);
+
     }
-    @DeleteMapping("/{habitId}")
-    public void deleteHabit(@PathVariable Long userId,@PathVariable Long habitId)
+    @DeleteMapping("/{roadmapId}")
+    public void deleteRoadmap(@PathVariable Long userId,@PathVariable Long roadmapId)
     {
-        habitService.deleteHabit(userId,habitId);
+        roadmapService.deleteRoadmap(userId,roadmapId);
     }
 
 
