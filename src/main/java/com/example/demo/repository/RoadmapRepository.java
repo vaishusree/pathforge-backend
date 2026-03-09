@@ -1,6 +1,4 @@
 package com.example.demo.repository;
-
-import com.example.demo.dto.RoadmapRespond;
 import com.example.demo.entity.Roadmap;
 import com.example.demo.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;

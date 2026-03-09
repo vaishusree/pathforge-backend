@@ -23,10 +23,11 @@ public class Roadmap {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    public Roadmap() {
-    }
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    public Roadmap() {
+    }
 
     public Roadmap(String title, String description, User user) {
         this.title = title;

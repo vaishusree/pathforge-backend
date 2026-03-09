@@ -41,7 +41,4 @@ public class RoadmapController {
     {
         roadmapService.deleteRoadmap(userId,roadmapId);
     }
-
-
-
 }
