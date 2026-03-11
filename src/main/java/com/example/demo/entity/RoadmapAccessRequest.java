@@ -39,9 +39,10 @@ public class RoadmapAccessRequest {
     }
 
     //@PrePersist sets the status hence no need to initiate it inside constructor
-    public RoadmapAccessRequest(User fromUser, User toUser) {
+    public RoadmapAccessRequest(User fromUser, User toUser,Roadmap roadmap) {
         this.fromUser = fromUser;
         this.toUser = toUser;
+        this.roadmap=roadmap;//storing the roadmap that is requested
 
     }
 
@@ -53,16 +54,8 @@ public class RoadmapAccessRequest {
         return fromUser;
     }
 
-    public void setFromUser(User fromUser) {
-        this.fromUser = fromUser;
-    }
-
     public User getToUser() {
         return toUser;
-    }
-
-    public void setToUser(User toUser) {
-        this.toUser = toUser;
     }
 
     public RequestStatus getStatus() {
@@ -77,5 +70,10 @@ public class RoadmapAccessRequest {
         return createdAt;
     }
 
+    public Roadmap getRoadmap() {
+        return roadmap;
+    }
 
+    // cannot have setters for id, fromUser, toUser,roadmap,createdAt, because once created
+    //we should never change the event
 }
