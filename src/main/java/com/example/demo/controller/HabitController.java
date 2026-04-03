@@ -1,7 +1,6 @@
 package com.example.demo.controller;
-
 import com.example.demo.dto.HabitRequest;
-import com.example.demo.entity.Habit;
+import com.example.demo.dto.HabitResponse;
 import com.example.demo.service.HabitService;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,20 +15,20 @@ public class HabitController {
     }
 
     @GetMapping
-    public List<Habit> getHabitsByUser(@PathVariable Long userId)
+    public List<HabitResponse> getHabitsByUser(@PathVariable Long userId)
     {
         return habitService.getHabitsByUser(userId);
     }
 
     @PostMapping
     //anything that comes from request body is untrusted
-    public Habit createHabit(@PathVariable Long userId,@RequestBody HabitRequest habit )
+    public HabitResponse createHabit(@PathVariable Long userId, @RequestBody HabitRequest habit )
     {
         return habitService.createHabit(userId,habit);
     }
 
     @PutMapping("/{habitId}")
-    public Habit updateHabit(@PathVariable Long userId, @PathVariable Long habitId,@RequestBody HabitRequest req)
+    public HabitResponse updateHabit(@PathVariable Long userId, @PathVariable Long habitId,@RequestBody HabitRequest req)
     {
         return habitService.updateHabit(userId,habitId,req);
     }

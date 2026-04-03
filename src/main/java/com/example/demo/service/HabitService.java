@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.HabitRequest;
+import com.example.demo.dto.HabitResponse;
 import com.example.demo.entity.Habit;
 import com.example.demo.entity.User;
 import com.example.demo.repository.HabitRepository;
@@ -28,8 +29,17 @@ public class HabitService {
         this.habitRepository = habitRepository;
         this.userRepository = userRepository;
     }
+    private HabitResponse mapToResponse(Habit habit) {
+        return new HabitResponse(
+                habit.getId(),
+                habit.getHabitName(),
+                habit.getUser().getId(),   // only ID
+                habit.getStartDate(),
+                habit.getFrequency()
+        );
+    }
 
-    public Habit createHabit(Long userId,HabitRequest habit)
+    public HabitResponse createHabit(Long userId,HabitRequest habit)
     {
         if(userId==null) throw new IllegalArgumentException("User id cannot be null");
         if(habit==null) throw new IllegalArgumentException("Habit cannot be null");
@@ -67,7 +77,11 @@ public class HabitService {
             You validated all inputs
             You fetched user from DB
             You did ownership check*/
-        return habitRepository.save(newHabit);
+        Habit habits= habitRepository.save(newHabit);
+
+        return mapToResponse(habits);
+
+
     }
     public void deleteHabit(Long userId,Long habitId)
     {
@@ -79,13 +93,15 @@ public class HabitService {
         }
         habitRepository.delete(habit);
     }
-    public List<Habit> getHabitsByUser(Long userId)
+    public List<HabitResponse> getHabitsByUser(Long userId)
     {
         User user=userRepository.findById(userId).orElseThrow(()-> new IllegalArgumentException("User not found"));
-        return habitRepository.findByUser(user);
+        List<Habit> habit= habitRepository.findByUser(user);
+
+        return habit.stream().map(this::mapToResponse).toList();
     }
 
-    public Habit updateHabit(Long userId, Long habitId, HabitRequest updateHabit) {
+    public HabitResponse updateHabit(Long userId, Long habitId, HabitRequest updateHabit) {
         if(updateHabit==null) throw new IllegalArgumentException("Update data cannot be null");
         Habit existingHabit=habitRepository.findById(habitId).orElseThrow(()->new IllegalArgumentException("Habit not found"));
         User user=userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("User not found"));
@@ -104,7 +120,7 @@ public class HabitService {
             else
             existingHabit.setStartDate(updateHabit.getStartDate());
         }
-        return habitRepository.save(existingHabit);
-
+        Habit habits= habitRepository.save(existingHabit);
+        return mapToResponse(habits);
     }
 }

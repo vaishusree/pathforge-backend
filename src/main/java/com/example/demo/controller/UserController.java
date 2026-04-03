@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.UserRequest;
+import com.example.demo.dto.UserResponse;
 import org.springframework.web.bind.annotation.*;
 import com.example.demo.service.UserService;
 import com.example.demo.entity.User;
@@ -14,14 +16,19 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getAllUsers()
+    public List<UserResponse> getAllUsers()
     {
         return userServices.getAllUsers();
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user)
+    public UserResponse createUser(@RequestBody UserRequest user)
     {
         return userServices.saveUser(user);
+    }
+
+    @DeleteMapping("/{userId}")
+    public void deleteUser(@PathVariable Long userId) {
+        userServices.deleteUser(userId);
     }
 }

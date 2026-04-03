@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.RoadmapAccessResponse;
 import com.example.demo.entity.RequestStatus;
 import com.example.demo.entity.Roadmap;
 import com.example.demo.entity.RoadmapAccessRequest;
@@ -23,7 +24,20 @@ public class RoadmapAccessService {
         this.roadmapRepository = roadmapRepository;
     }
 
-    //post- sending request
+    private RoadmapAccessResponse mapToResponse(RoadmapAccessRequest request)
+    {
+        return new RoadmapAccessResponse(
+                request.getId(),
+                request.getFromUser().getId(),
+                request.getToUser().getId(),
+                request.getRoadmap().getId(),
+                request.getStatus().name(), // here for the entitiy we have  used enum for status input but as of the
+                // for response dto set status as string so that input be given in string rather than enum generated output
+                request.getCreatedAt()
+
+        );
+    }
+    //post-sending request
     public void requestAccess(Long fromUserId, Long roadmapId)
     {
         User fromUser = userRepository.findById(fromUserId)
@@ -101,12 +115,14 @@ public class RoadmapAccessService {
 
         requestRepository.delete(request);
     }
-    public List<RoadmapAccessRequest> getIncomingRequests(Long userId)
+    public List<RoadmapAccessResponse> getIncomingRequests(Long userId)
     {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        return requestRepository.findByToUserAndStatus(user, RequestStatus.PENDING);
+        List<RoadmapAccessRequest> r= requestRepository.findByToUserAndStatus(user, RequestStatus.PENDING);
+
+        return r.stream().map(this::mapToResponse).toList();
     }
 
 }

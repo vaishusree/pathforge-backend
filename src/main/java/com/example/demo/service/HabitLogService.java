@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.HabitLogResponse;
 import com.example.demo.entity.Habit;
 import com.example.demo.entity.HabitLog;
 import com.example.demo.entity.User;
@@ -24,8 +25,17 @@ public class HabitLogService {
         this.userRepository = userRepository;
     }
 
+    public HabitLogResponse mapToResponse(HabitLog habits)
+    {
+        return new HabitLogResponse(
+                habits.getId(),
+                habits.getHabit().getId(),
+                habits.getProgressDate(),
+                habits.getStatus()
+        );
+    }
 
-    public HabitLog checkIn(Long habitId,Long userId, LocalDate progressDate, boolean status)
+    public HabitLogResponse checkIn(Long habitId, Long userId, LocalDate progressDate, boolean status)
     {
         if(userId==null) throw new IllegalArgumentException("User id cannot be null");
         User user=userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("User not found"));
@@ -42,10 +52,12 @@ public class HabitLogService {
         //here we are using ternary operator bcz we only assigned it once and nvr changed it.but in case of if else then later wea re updating progressDate which is against lambda rules
         habitLog.setStatus(status);
 
-        return habitLogRepository.save(habitLog);
+         HabitLog habitLogs=habitLogRepository.save(habitLog);
+
+         return mapToResponse(habitLogs);
     }
 
-    public List<HabitLog> getLogsForHabit(Long habitId,Long userId, LocalDate fromDate, LocalDate toDate)
+    public List<HabitLogResponse> getLogsForHabit(Long habitId,Long userId, LocalDate fromDate, LocalDate toDate)
     {
 
         if(userId==null) throw new IllegalArgumentException("User id cannot be null");
@@ -63,7 +75,6 @@ public class HabitLogService {
 
         List<HabitLog> habitLog=habitLogRepository.findByHabitAndProgressDateBetween(habit,finalFromDate,finalToDate);
 
-        return habitLog;
-
+        return habitLog.stream().map(this::mapToResponse).toList();
     }
 }
