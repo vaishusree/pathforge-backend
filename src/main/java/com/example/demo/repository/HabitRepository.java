@@ -9,6 +9,5 @@ import java.util.List;
 public interface HabitRepository extends JpaRepository<Habit,Long> {
     long countByUser(User user);
     boolean existsByUserAndHabitName(User user, String habitName);
-
     List<Habit> findByUser(User user);
 }

@@ -37,6 +37,31 @@ public class UserService {
         {
             throw new IllegalStateException("Email already exists");
         }
+        String password = request.getPassword();
+
+        if(password == null || password.isBlank()) {
+            throw new IllegalArgumentException("Password cannot be empty");
+        }
+
+        if(password.length() < 6) {
+            throw new IllegalArgumentException("Password must be at least 6 characters long");
+        }
+
+        if(!password.matches(".*[A-Z].*")) {
+            throw new IllegalArgumentException("Password must contain at least one uppercase letter");
+        }
+
+        if(!password.matches(".*\\d.*")) {
+            throw new IllegalArgumentException("Password must contain at least one number");
+        }
+
+        if(!password.matches(".*[!@#$%^&*()].*")) {
+            throw new IllegalArgumentException("Password must contain at least one special character");
+        }
+
+        if(request.getEmail() == null || !request.getEmail().contains("@")) {
+            throw new IllegalArgumentException("Invalid email");
+        }
 
         User user=new User();
         user.setName(request.getName());

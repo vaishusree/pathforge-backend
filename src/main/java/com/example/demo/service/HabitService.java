@@ -4,6 +4,7 @@ import com.example.demo.dto.HabitRequest;
 import com.example.demo.dto.HabitResponse;
 import com.example.demo.entity.Habit;
 import com.example.demo.entity.User;
+import com.example.demo.repository.HabitLogRepository;
 import com.example.demo.repository.HabitRepository;
 import com.example.demo.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -21,13 +22,15 @@ import java.util.List;
 public class HabitService {
     private final HabitRepository habitRepository;
     private final UserRepository userRepository;
+    private final HabitLogRepository habitLogRepository;
     //with final the ref object cannot point to a different obj
     //u cannot assign the same ref to diff object
 
 
-    public HabitService(HabitRepository habitRepository, UserRepository userRepository) {
+    public HabitService(HabitRepository habitRepository, UserRepository userRepository, HabitLogRepository habitLogRepository) {
         this.habitRepository = habitRepository;
         this.userRepository = userRepository;
+        this.habitLogRepository = habitLogRepository;
     }
     private HabitResponse mapToResponse(Habit habit) {
         return new HabitResponse(
@@ -49,7 +52,9 @@ public class HabitService {
         {
             throw new IllegalStateException("Users cannot have more than 10 habits");
         }
-        if(habit.getHabitName()==null) throw new IllegalArgumentException("Habit Name cannot be null");
+
+        if(habit.getHabitName().isEmpty()) throw new IllegalArgumentException("Habit Name cannot be null");
+        // HERE == NULL ONLY CATCHES EMPTY SPACES IE " ", BUT NOT "" HENCE CHANGING IT TO isEmpty()
         if((habit.getHabitName()!=null) && habitRepository.existsByUserAndHabitName(user,habit.getHabitName()))
         {
             throw new IllegalStateException("Habit already exists for the user");
@@ -90,6 +95,11 @@ public class HabitService {
         if(!habit.getUser().getId().equals(user.getId()))
         {
             throw new IllegalStateException("Cannot delete habit of another user");
+        }
+        boolean hasLogs = habitLogRepository.existsByHabit(habit);
+
+        if (hasLogs) {
+            throw new IllegalStateException("Cannot delete habit with existing logs");
         }
         habitRepository.delete(habit);
     }

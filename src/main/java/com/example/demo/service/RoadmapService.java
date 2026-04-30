@@ -89,6 +89,10 @@ public class RoadmapService {
             if(updateRoadmap.getTitle().isBlank()) throw new IllegalArgumentException("Title cannot be blank");
             roadmap.setTitle(updateRoadmap.getTitle());
         }
+        if(updateRoadmap.getTitle()==null)
+        {
+            throw new IllegalArgumentException("Title cannot be null");
+        }
 
         if(updateRoadmap.getDescription()!=null)
         {

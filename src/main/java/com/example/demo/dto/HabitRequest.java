@@ -1,8 +1,11 @@
 package com.example.demo.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 import java.time.LocalDate;
 
 public class HabitRequest {
+    @NotBlank(message = "Habit name cannot be empty")
     private String habitName;
     private String frequency;
     private LocalDate startDate;

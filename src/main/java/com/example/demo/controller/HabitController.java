@@ -2,6 +2,8 @@ package com.example.demo.controller;
 import com.example.demo.dto.HabitRequest;
 import com.example.demo.dto.HabitResponse;
 import com.example.demo.service.HabitService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,10 +23,10 @@ public class HabitController {
     }
 
     @PostMapping
-    //anything that comes from request body is untrusted
-    public HabitResponse createHabit(@PathVariable Long userId, @RequestBody HabitRequest habit )
-    {
-        return habitService.createHabit(userId,habit);
+    public ResponseEntity<HabitResponse> createHabit(@PathVariable Long userId,
+            @Valid @RequestBody HabitRequest request) {
+
+        return ResponseEntity.ok(habitService.createHabit(userId,request));
     }
 
     @PutMapping("/{habitId}")

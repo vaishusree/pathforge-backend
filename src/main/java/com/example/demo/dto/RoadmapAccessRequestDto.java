@@ -1,6 +1,6 @@
 package com.example.demo.dto;
 
-public class RoadmapAccessRequestdto {
+public class RoadmapAccessRequestDto {
 
     private Long roadmapId;
 
